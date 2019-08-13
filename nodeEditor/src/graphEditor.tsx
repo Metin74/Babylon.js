@@ -43,7 +43,6 @@ import { TrigonometryBlock } from 'babylonjs/Materials/Node/Blocks/trigonometryB
 import { TrigonometryNodeModel } from './components/diagram/trigonometry/trigonometryNodeModel';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 
-require("storm-react-diagrams/dist/style.min.css");
 require("./main.scss");
 require("./components/diagram/diagram.scss");
 
@@ -286,71 +285,71 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
 
         // Listen to events
 
-        // this._model.registerListener({
-        //     nodesUpdated: (e) => {                
-        //         if (!e.isCreated) {
-        //             // Block is deleted
-        //             let targetBlock = (e.node as GenericNodeModel).block;
+        this._model.registerListener({
+            nodesUpdated: (e) => {                
+                if (!e.isCreated) {
+                    // Block is deleted
+                    let targetBlock = (e.node as GenericNodeModel).block;
 
-        //             if (targetBlock) {
-        //                 let attachedBlockIndex = this.props.globalState.nodeMaterial!.attachedBlocks.indexOf(targetBlock);
-        //                 if (attachedBlockIndex > -1) {
-        //                     this.props.globalState.nodeMaterial!.attachedBlocks.splice(attachedBlockIndex, 1);
-        //                 }
+                    if (targetBlock) {
+                        let attachedBlockIndex = this.props.globalState.nodeMaterial!.attachedBlocks.indexOf(targetBlock);
+                        if (attachedBlockIndex > -1) {
+                            this.props.globalState.nodeMaterial!.attachedBlocks.splice(attachedBlockIndex, 1);
+                        }
 
-        //                 if (targetBlock.isFinalMerger) {
-        //                     this.props.globalState.nodeMaterial!.removeOutputNode(targetBlock);
-        //                 }
-        //                 let blockIndex = this._blocks.indexOf(targetBlock);
+                        if (targetBlock.isFinalMerger) {
+                            this.props.globalState.nodeMaterial!.removeOutputNode(targetBlock);
+                        }
+                        let blockIndex = this._blocks.indexOf(targetBlock);
 
-        //                 if (blockIndex > -1) {
-        //                     this._blocks.splice(blockIndex, 1);
-        //                 }
-        //             }                  
+                        if (blockIndex > -1) {
+                            this._blocks.splice(blockIndex, 1);
+                        }
+                    }                  
 
-        //             this.props.globalState.onSelectionChangedObservable.notifyObservers(null);
-        //         }
-        //     },
-        //     linksUpdated: (e) => {
-        //         if (!e.isCreated) {
-        //             // Link is deleted
-        //             this.props.globalState.onSelectionChangedObservable.notifyObservers(null);
-        //             let sourcePort = e.link.sourcePort as DefaultPortModel;
+                    this.props.globalState.onSelectionChangedObservable.notifyObservers(null);
+                }
+            },
+            linksUpdated: (e) => {
+                if (!e.isCreated) {
+                    // Link is deleted
+                    this.props.globalState.onSelectionChangedObservable.notifyObservers(null);
+                    let sourcePort = e.link.sourcePort as DefaultPortModel;
 
-        //             var link = DefaultPortModel.SortInputOutput(sourcePort, e.link.targetPort as DefaultPortModel);
-        //             if (link) {
-        //                 if (link.input.connection && link.output.connection) {
-        //                     if (link.input.connection.connectedPoint) {
-        //                         // Disconnect standard nodes
-        //                         link.output.connection.disconnectFrom(link.input.connection);
-        //                         link.input.syncWithNodeMaterialConnectionPoint(link.input.connection);
-        //                         link.output.syncWithNodeMaterialConnectionPoint(link.output.connection);
-        //                     }
-        //                 }
-        //             } else {
-        //                 if (!e.link.targetPort && e.link.sourcePort && (e.link.sourcePort as DefaultPortModel).position === "input") {
-        //                     // Drag from input port, we are going to build an input for it                            
-        //                     let input = e.link.sourcePort as DefaultPortModel;
-        //                     let nodeModel = this.addValueNode(BlockTools.GetStringFromConnectionNodeType(input.connection!.type));
-        //                     let link = nodeModel.ports.output.link(input);
+                    var link = DefaultPortModel.SortInputOutput(sourcePort, e.link.targetPort as DefaultPortModel);
+                    if (link) {
+                        if (link.input.connection && link.output.connection) {
+                            if (link.input.connection.connectedPoint) {
+                                // Disconnect standard nodes
+                                link.output.connection.disconnectFrom(link.input.connection);
+                                link.input.syncWithNodeMaterialConnectionPoint(link.input.connection);
+                                link.output.syncWithNodeMaterialConnectionPoint(link.output.connection);
+                            }
+                        }
+                    } else {
+                        if (!e.link.targetPort && e.link.sourcePort && (e.link.sourcePort as DefaultPortModel).position === "input") {
+                            // Drag from input port, we are going to build an input for it                            
+                            let input = e.link.sourcePort as DefaultPortModel;
+                            let nodeModel = this.addValueNode(BlockTools.GetStringFromConnectionNodeType(input.connection!.type));
+                            let link = nodeModel.ports.output.link(input);
 
-        //                     nodeModel.setPosition(e.link.points[1].x - this.NodeWidth, e.link.points[1].y);
+                            nodeModel.setPosition(e.link.points[1].x - this.NodeWidth, e.link.points[1].y);
 
-        //                     setTimeout(() => {
-        //                         this._model.addLink(link);
-        //                         input.syncWithNodeMaterialConnectionPoint(input.connection!);
-        //                         nodeModel.ports.output.syncWithNodeMaterialConnectionPoint(nodeModel.ports.output.connection!);                                 
+                            setTimeout(() => {
+                                this._model.addLink(link);
+                                input.syncWithNodeMaterialConnectionPoint(input.connection!);
+                                nodeModel.ports.output.syncWithNodeMaterialConnectionPoint(nodeModel.ports.output.connection!);                                 
 
-        //                         this.forceUpdate();
-        //                     }, 1);
+                                this.forceUpdate();
+                            }, 1);
                            
-        //                     nodeModel.ports.output.connection!.connectTo(input.connection!);
-        //                     this.props.globalState.onRebuildRequiredObservable.notifyObservers();
-        //                 }
-        //             }
-        //             this.forceUpdate();
-        //             return;
-        //         }
+                            nodeModel.ports.output.connection!.connectTo(input.connection!);
+                            this.props.globalState.onRebuildRequiredObservable.notifyObservers();
+                        }
+                    }
+                    this.forceUpdate();
+                    return;
+                }});
 
         //         e.link.registerListener({
         //             sourcePortChanged: () => {
