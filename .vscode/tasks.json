@@ -69,6 +69,14 @@
                 }
             ],
             "isBackground": true
+        },
+        {
+            "type": "typescript",
+            "tsconfig": "Viewer/tsconfig.json",
+            "option": "watch",
+            "problemMatcher": [
+                "$tsc-watch"
+            ]
         }
     ]
 }
